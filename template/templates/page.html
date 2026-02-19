@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} - {{ config.title }}{% endblock title %}
+{% block description %}{{ page.description | default(value=config.description) }}{% endblock description %}
+{% block og_title %}{{ page.title }} - {{ config.title }}{% endblock og_title %}
+
+{% block content %}
+<div class="docs-layout">
+    <nav class="docs-sidebar">
+        <ul>
+            {% set root = get_section(path="_index.md") %}
+            {% for p in root.pages %}
+            <li{% if p.path == page.path %} class="active"{% endif %}>
+                <a href="{{ p.permalink | safe }}">{{ p.extra.short_title | default(value=p.title) }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+    <article class="docs-content">
+        <h1>{{ page.title }}</h1>
+        {{ page.content | safe }}
+    </article>
+</div>
+{% endblock content %}
