@@ -40,8 +40,4 @@ runs:
         INPUT_SOURCE_PATH: ${{ inputs.source-path }}
       run: |
         cd "${INPUT_SOURCE_PATH}/.zola-build" && zola build
-
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: ${{ inputs.source-path }}/.zola-build/public
+        echo "Site built to: ${INPUT_SOURCE_PATH}/.zola-build/public"
