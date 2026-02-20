@@ -1,0 +1,47 @@
+name: 'Zola Builder'
+description: 'Generate and deploy documentation site from README using Zola'
+inputs:
+  source-path:
+    description: 'Path to the source repository (checked out in workspace)'
+    required: true
+    default: '.'
+  base-url:
+    description: 'Base URL for the site (defaults to GitHub Pages URL)'
+    required: false
+    default: ''
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Zola
+      shell: bash
+      run: |
+        ZOLA_VERSION="0.19.2"
+        wget -q "https://github.com/getzola/zola/releases/download/v${ZOLA_VERSION}/zola-v${ZOLA_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+        tar xzf "zola-v${ZOLA_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+        sudo mv zola /usr/local/bin/
+
+    - name: Generate Zola site
+      shell: bash
+      env:
+        INPUT_SOURCE_PATH: ${{ inputs.source-path }}
+        INPUT_BASE_URL: ${{ inputs.base-url }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+      run: |
+        python3 "${{ github.action_path }}/scripts/build-action.py" "${INPUT_SOURCE_PATH}"
+
+    - name: Build site
+      shell: bash
+      env:
+        INPUT_SOURCE_PATH: ${{ inputs.source-path }}
+      run: |
+        cd "${INPUT_SOURCE_PATH}/.zola-build" && zola build
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ${{ inputs.source-path }}/.zola-build/public

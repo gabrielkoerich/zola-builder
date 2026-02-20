@@ -4,6 +4,26 @@ Generate documentation sites from a repository's README. Reads the markdown, spl
 
 ## Usage
 
+### Option 1: GitHub Action (Recommended)
+
+Keep your repo clean — just add a workflow file and let CI handle everything.
+
+```bash
+just install-workflow ../skills
+```
+
+This installs `.github/workflows/zola-builder.yml` in the target repo. The workflow uses this repository as a GitHub Action to build and deploy docs automatically.
+
+You can customize the action reference:
+
+```bash
+just install-workflow ../skills --action-ref="your-org/zola-builder@v1"
+```
+
+### Option 2: Local Generation
+
+Generate all Zola files directly in the target repo for local development.
+
 ```bash
 just build ../skills
 ```
@@ -14,8 +34,8 @@ Other commands:
 
 ```bash
 just generate ../skills   # generate files without building
-just serve ../skills       # live-reload preview
-just clean ../skills       # remove generated Zola files
+just serve ../skills      # live-reload preview
+just clean ../skills      # remove generated Zola files
 ```
 
 ## Requirements
@@ -26,6 +46,15 @@ just clean ../skills       # remove generated Zola files
 - Python 3
 
 ## What it does
+
+### GitHub Action Mode (Option 1)
+
+Installs a single workflow file that:
+1. Uses this repo as a GitHub Action on push to main
+2. Builds the docs in CI without polluting the source repo
+3. Deploys to GitHub Pages automatically
+
+### Local Mode (Option 2)
 
 1. Extracts metadata from the target repo (name, description, author) via `git` remote and `gh` CLI
 2. Parses `README.md` — title from `#`, intro from the first paragraph, pages from each `##` section
@@ -38,7 +67,17 @@ just clean ../skills       # remove generated Zola files
 9. Adds `public/` to `.gitignore`
 10. Runs `zola build` to verify
 
-## What gets created in the target repo
+## What gets created
+
+### GitHub Action Mode
+
+```
+.github/workflows/zola-builder.yml   # Single workflow file
+```
+
+Everything else happens in CI using this repo as a reusable action.
+
+### Local Mode
 
 ```
 config.toml                     # Zola config (base_url, title, author)
@@ -67,9 +106,12 @@ Dark theme inspired by GitHub's color palette. 800px max-width centered containe
 
 ```
 zola-builder/
-  Justfile                      # just build <repo_path>
+  action.yml                    # GitHub Action definition
+  Justfile                      # just build <repo_path> / just install-workflow <repo_path>
   scripts/
-    build.py                    # Main build script
+    build.py                    # Main build script (local mode)
+    build-action.py             # Build script for GitHub Actions
+    install-workflow.py         # Installs workflow in target repo
   template/
     templates/
       base.html                 # Layout with header, sidebar, footer
@@ -78,5 +120,6 @@ zola-builder/
     sass/
       main.scss                 # Dark theme styles
     workflows/
-      deploy.yml                # GitHub Actions for GitHub Pages
+      deploy.yml                # GitHub Actions for GitHub Pages (local mode)
+      zola-builder.yml          # Workflow using this repo as an action
 ```

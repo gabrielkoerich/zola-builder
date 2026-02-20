@@ -13,3 +13,7 @@ serve repo_path:
 # Clean generated files from a repository
 clean repo_path:
     python3 scripts/build.py {{repo_path}} --clean
+
+# Install GitHub workflow only (for repos using zola-builder as an action)
+install-workflow repo_path:
+    python3 scripts/install-workflow.py {{repo_path}}
