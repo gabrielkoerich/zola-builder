@@ -228,11 +228,10 @@ def generate_config(build_dir, metadata, readme_data):
     description = escape_toml(metadata["description"] or readme_data["intro"][:200])
 
     # Allow overriding base_url from environment
+    # Default to '/' for root-relative URLs (works with any domain)
     base_url = os.environ.get("INPUT_BASE_URL", "")
-    if not base_url and metadata.get("github_owner"):
-        base_url = f"https://{metadata['github_owner']}.github.io/{metadata['name']}"
-    elif not base_url:
-        base_url = "http://localhost:1111"
+    if not base_url:
+        base_url = "/"
 
     author = escape_toml(metadata.get("author_name", metadata.get("github_owner", "")))
     author_url = metadata.get("author_website", "")
