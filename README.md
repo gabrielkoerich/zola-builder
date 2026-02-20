@@ -20,6 +20,15 @@ You can customize the action reference:
 just install-workflow ../skills --action-ref="your-org/zola-builder@v1"
 ```
 
+**Custom domains:** If using a custom domain or subdirectory (e.g., `https://example.com/mysite/`), edit the workflow and set `BASE_URL`:
+
+```yaml
+env:
+  BASE_URL: "https://projects.gabrielkoerich.com/skills"
+```
+
+Leave it empty (`""`) for root-relative URLs (`/`) which work with GitHub Pages default domains.
+
 ### Option 2: Local Generation
 
 Generate all Zola files directly in the target repo for local development.
